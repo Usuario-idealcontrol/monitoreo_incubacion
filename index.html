@@ -300,6 +300,8 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
 .ic-sub2 { font-size: var(--cds-font-size-body); font-weight: 600; margin: 0 0 4px; color: #fff; }
 .ic-more { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: var(--cds-font-size-caption); color: rgba(255,255,255,.75); }
 .ic-btn-ghost { background: transparent; }
+.ic-chipd { font-size: 11px; font-weight: 600; margin-left: 2px; }
+.ic-pick-note { font-size: 11px; color: rgba(255,255,255,.65); }
 </style>
 <style>
 .ic-badge.Inactivo { color: var(--color-fg-muted); border-style: dashed; }
@@ -349,6 +351,15 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
         <span class="ic-txt">Resumen</span>
       </button>
+      <button class="ic-link" type="button" data-target="madurez">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.9 0 7 6 7 10.5A7 7 0 0 1 5 13.5C5 9 8.1 3 12 3z"/><path d="M9 14.5a3 3 0 0 0 3 3"/></svg>
+        <span class="ic-txt">Madurez</span>
+      </button>
+      <button class="ic-link" type="button" data-target="todas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span class="ic-txt">Todas las gráficas</span>
+      </button>
+      <hr>
       <button class="ic-link" type="button" data-target="eventos">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg>
         <span class="ic-txt">Avisos</span>
@@ -358,18 +369,9 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
         <span class="ic-txt">Calendario de hitos</span>
       </button>
-      <hr>
       <button class="ic-link" type="button" data-target="estado">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>
         <span class="ic-txt">Detalle</span>
-      </button>
-      <button class="ic-link" type="button" data-target="madurez">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.9 0 7 6 7 10.5A7 7 0 0 1 5 13.5C5 9 8.1 3 12 3z"/><path d="M9 14.5a3 3 0 0 0 3 3"/></svg>
-        <span class="ic-txt">Madurez</span>
-      </button>
-      <button class="ic-link" type="button" data-target="todas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-        <span class="ic-txt">Todas las gráficas</span>
       </button>
       <hr>
       <button class="ic-link" type="button" data-target="supuestos">
@@ -396,6 +398,43 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
     <div class="ic-sys2">
       <section class="ic-card ic-glass ic-sys" data-draw="sys_toco" data-source="resumen" data-sys="toco"></section>
     </div>
+
+    <section class="ic-card ic-glass" id="madurez">
+      <h2>Madurez y temperatura · <span data-draw="sel_u" data-source="estado_incubadoras" data-field="incubadora">—</span></h2>
+      <div class="ic-pick">
+        <div class="ic-seg ic-seg-sm" role="group" aria-label="Sistema">
+          <button type="button" data-pick-sys="zj">Sensen · Zoug Jar</button>
+          <button type="button" data-pick-sys="reuso">Sensen · Reuso</button>
+          <button type="button" data-pick-sys="toco">Tocoihue</button>
+        </div>
+        <div class="ic-pick-note">Ordenadas de mayor a menor desviación respecto de lo esperado (días adelantado + o atrasado −).</div>
+        <div class="ic-chips" data-draw="inc_chips" data-source="estado_incubadoras" role="listbox" aria-label="Incubadora"></div>
+      </div>
+      <p class="ic-note" data-draw="mad_note" data-source="estado_incubadoras">—</p>
+      <div class="ic-chart dash-skeleton" data-draw="uta_chart" data-source="desarrollo_diario reuso_uta_diaria toco_desarrollo estado_incubadoras"></div>
+      <div class="ic-split" id="temperatura">
+      <h3 class="ic-sub2">Temperatura, últimos 14 días · <span data-draw="sel_t" data-source="estado_incubadoras" data-field="incubadora">—</span></h3>
+      <p class="ic-note">Lectura horaria. Franja verde: banda programada en el PLC. Los puntos rojos marcan horas fuera de banda, que generan un aviso.</p>
+      <div class="ic-chart dash-skeleton" data-draw="temp_chart" data-source="temperatura_horaria reuso_temp_horaria toco_temp_100 toco_temp_200 toco_temp_300 estado_incubadoras"></div>
+      </div>
+    </section>
+
+    <section class="ic-card ic-glass" id="todas">
+      <h2>Todas las incubadoras · <span data-draw="sys_name1" data-source="resumen">—</span></h2>
+      <p class="ic-note">Temperatura horaria de 14 días con su banda, y madurez acumulada real (azul) contra lo esperado (ámbar) desde el inicio del lote. Pasa el dedo o el mouse por una gráfica para ver los valores; toca el encabezado de una incubadora para agrandar sus gráficas ahí mismo.</p>
+      <div class="ic-segs">
+        <div class="ic-seg" role="group" aria-label="Qué gráficas mostrar">
+          <button type="button" data-mode="ambas" class="is-on">Ambas</button>
+          <button type="button" data-mode="pct">Madurez</button>
+          <button type="button" data-mode="temp">Temperatura</button>
+        </div>
+        <div class="ic-seg" role="group" aria-label="Qué incubadoras mostrar">
+          <button type="button" data-scope="activas" class="is-on">Lotes activos</button>
+          <button type="button" data-scope="todas">Todas</button>
+        </div>
+      </div>
+      <div class="ic-multi" data-draw="all_charts" data-source="temperatura_horaria desarrollo_diario reuso_temp_horaria reuso_uta_diaria toco_temp_100 toco_temp_200 toco_temp_300 toco_desarrollo estado_incubadoras"></div>
+    </section>
 
     <section class="ic-card ic-glass" id="eventos">
       <h2>Avisos: temperatura fuera de lo programado, últimos 14 días</h2>
@@ -448,7 +487,7 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
         </div>
       </div>
       <p class="ic-sysdesc" data-draw="sys_desc" data-source="resumen">—</p>
-      <p class="ic-note">Temperatura actual contra la banda programada, horas fuera de banda en 14 días y madurez acumulada contra lo esperado. Toca una fila para ver su madurez y temperatura justo abajo.</p>
+      <p class="ic-note">Temperatura actual contra la banda programada, horas fuera de banda en 14 días y madurez acumulada contra lo esperado. Toca una fila para ver su madurez y temperatura en la gráfica de arriba.</p>
       <div class="ic-tablebox">
         <table data-source="estado_incubadoras" data-row-key="incubadora">
           <thead><tr>
@@ -471,41 +510,7 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
 
 
 
-    <section class="ic-card ic-glass" id="madurez">
-      <h2>Madurez y temperatura · <span data-draw="sel_u" data-source="estado_incubadoras" data-field="incubadora">—</span></h2>
-      <div class="ic-pick">
-        <div class="ic-seg ic-seg-sm" role="group" aria-label="Sistema">
-          <button type="button" data-pick-sys="zj">Sensen · Zoug Jar</button>
-          <button type="button" data-pick-sys="reuso">Sensen · Reuso</button>
-          <button type="button" data-pick-sys="toco">Tocoihue</button>
-        </div>
-        <div class="ic-chips" data-draw="inc_chips" data-source="estado_incubadoras" role="listbox" aria-label="Incubadora"></div>
-      </div>
-      <p class="ic-note" data-draw="mad_note" data-source="estado_incubadoras">—</p>
-      <div class="ic-chart dash-skeleton" data-draw="uta_chart" data-source="desarrollo_diario reuso_uta_diaria toco_desarrollo estado_incubadoras"></div>
-      <div class="ic-split" id="temperatura">
-      <h3 class="ic-sub2">Temperatura, últimos 14 días · <span data-draw="sel_t" data-source="estado_incubadoras" data-field="incubadora">—</span></h3>
-      <p class="ic-note">Lectura horaria. Franja verde: banda programada en el PLC. Los puntos rojos marcan horas fuera de banda, que generan un aviso.</p>
-      <div class="ic-chart dash-skeleton" data-draw="temp_chart" data-source="temperatura_horaria reuso_temp_horaria toco_temp_100 toco_temp_200 toco_temp_300 estado_incubadoras"></div>
-      </div>
-    </section>
 
-    <section class="ic-card ic-glass" id="todas">
-      <h2>Todas las incubadoras · <span data-draw="sys_name1" data-source="resumen">—</span></h2>
-      <p class="ic-note">Temperatura horaria de 14 días con su banda, y madurez acumulada real (azul) contra lo esperado (ámbar) desde el inicio del lote. Pasa el dedo o el mouse por una gráfica para ver los valores; toca el encabezado de una incubadora para agrandar sus gráficas ahí mismo.</p>
-      <div class="ic-segs">
-        <div class="ic-seg" role="group" aria-label="Qué gráficas mostrar">
-          <button type="button" data-mode="ambas" class="is-on">Ambas</button>
-          <button type="button" data-mode="pct">Madurez</button>
-          <button type="button" data-mode="temp">Temperatura</button>
-        </div>
-        <div class="ic-seg" role="group" aria-label="Qué incubadoras mostrar">
-          <button type="button" data-scope="activas" class="is-on">Lotes activos</button>
-          <button type="button" data-scope="todas">Todas</button>
-        </div>
-      </div>
-      <div class="ic-multi" data-draw="all_charts" data-source="temperatura_horaria desarrollo_diario reuso_temp_horaria reuso_uta_diaria toco_temp_100 toco_temp_200 toco_temp_300 toco_desarrollo estado_incubadoras"></div>
-    </section>
 
     <section class="ic-card ic-glass ic-assume" id="supuestos">
       <h2>Cómo leer estos datos (interpretaciones a confirmar con Sensen)</h2>
@@ -575,7 +580,8 @@ window.inc = {
     const rows = window.inc.mrows();
     if (window.madSel && rows.some((r) => r.incubadora === window.madSel)) return window.madSel;
     if (window.incSel && rows.some((r) => r.incubadora === window.incSel)) return window.incSel;
-    const a = rows.find((r) => r.estado === 'Fuera de banda') || rows.find((r) => r.lote_activo) || rows[0];
+    const dev = (r) => (r.lote_activo && r.dif_dias != null ? Math.abs(r.dif_dias) : -1);
+    const a = rows.slice().sort((x, y) => dev(y) - dev(x))[0];
     return a ? a.incubadora : null;
   },
   pick: (id) => {
@@ -1027,7 +1033,8 @@ dash.draw('inc_chips', (el) => {
   if (inc.pending(el, ['estado_incubadoras'])) return;
   el.replaceChildren();
   const cur = inc.msel();
-  inc.mrows().forEach((r) => {
+  const dev = (r) => (r.lote_activo && r.dif_dias != null ? Math.abs(r.dif_dias) : -1);
+  inc.mrows().slice().sort((x, y) => dev(y) - dev(x) || (x.incubadora < y.incubadora ? -1 : 1)).forEach((r) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'ic-chipb' + (r.incubadora === cur ? ' is-on' : '') + (r.lote_activo ? '' : ' is-off');
@@ -1037,6 +1044,13 @@ dash.draw('inc_chips', (el) => {
     const dot = document.createElement('i');
     dot.style.background = r.estado === 'Fuera de banda' ? 'var(--color-bad)' : r.estado === 'En banda' ? 'var(--color-ok)' : 'rgba(255,255,255,.3)';
     b.append(dot, document.createTextNode(r.incubadora));
+    if (r.lote_activo && r.dif_dias != null) {
+      const d = document.createElement('small');
+      d.className = 'ic-chipd';
+      d.textContent = r.dif_dias === 0 ? '0 d' : (r.dif_dias > 0 ? '+' : '−') + Math.abs(r.dif_dias) + ' d';
+      d.style.color = r.dif_dias > 0 ? 'var(--color-warn)' : r.dif_dias < 0 ? 'var(--ic-accent)' : '';
+      b.append(d);
+    }
     b.onclick = (ev) => { ev.preventDefault(); inc.pick(r.incubadora); };
     el.append(b);
   });
