@@ -1426,7 +1426,22 @@ dash.draw('all_charts', (el) => {
     card.append(head, sub, k);
     const big = window.incOpen === est.incubadora;
     if (big) card.classList.add('is-big');
-    const go = () => { window.incOpen = big ? null : est.incubadora; inc.select(est.incubadora); };
+    card.dataset.inc = est.incubadora;
+    const go = () => {
+      const id = est.incubadora;
+      const top = card.getBoundingClientRect().top;
+      window.incOpen = big ? null : id;
+      dash.draw('all_charts');
+      const anchor = () => {
+        document.querySelectorAll('#todas .ic-mini').forEach((c) => {
+          if (c.dataset.inc !== id) return;
+          const d = c.getBoundingClientRect().top - top;
+          if (Math.abs(d) > 1) window.scrollBy({ top: d, behavior: 'instant' });
+        });
+      };
+      anchor();
+      requestAnimationFrame(() => { anchor(); requestAnimationFrame(anchor); });
+    };
     card.onclick = (ev) => { if (big ? ev.target.closest('.ic-mini-h') : !ev.target.closest('.ic-mini-c')) go(); };
     card.onkeydown = (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } };
     el.append(card);
