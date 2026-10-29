@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sitio en construcción</title>
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --fg: #1f2328;
+      --muted: #5c6370;
+      --accent: #f2b705;
+      --stripe: #1f2328;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14161a;
+        --fg: #eceae4;
+        --muted: #a0a6b0;
+        --stripe: #0a0b0d;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    .tape {
+      height: 28px;
+      background: repeating-linear-gradient(
+        -45deg, var(--accent) 0 24px, var(--stripe) 24px 48px
+      );
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 16px;
+      gap: 20px;
+    }
+    .icon { font-size: 4.5rem; line-height: 1; animation: bob 2.4s ease-in-out infinite; }
+    h1 { font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: -0.02em; }
+    p { color: var(--muted); font-size: 1.125rem; max-width: 34rem; line-height: 1.6; }
+    .bar {
+      width: min(320px, 100%);
+      height: 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--muted) 25%, transparent);
+      overflow: hidden;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: var(--accent);
+      border-radius: inherit;
+      animation: load 2s ease-in-out infinite;
+    }
+    @keyframes bob { 50% { transform: translateY(-8px); } }
+    @keyframes load {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .icon, .bar span { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tape" aria-hidden="true"></div>
+  <main>
+    <div class="icon" aria-hidden="true">🚧</div>
+    <h1>Estamos en construcción</h1>
+    <p>Estamos trabajando para traerte algo nuevo. Vuelve pronto.</p>
+    <div class="bar" aria-hidden="true"><span></span></div>
+  </main>
+  <div class="tape" aria-hidden="true"></div>
+</body>
+</html>
