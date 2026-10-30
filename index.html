@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08111f">
+<meta name="description" content="Monitoreo de incubación de Piscicultura Sensen: temperatura, desarrollo y estado de las incubadoras Zoug Jar (Salar y Trucha).">
 <title>Monitoreo de incubación · Sensen</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <style>
@@ -523,8 +525,8 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
       <h2>Cómo leer estos datos (interpretaciones a confirmar con Sensen)</h2>
       <h3>Los dos sistemas</h3>
       <ul>
-        <li><b>Sensen · Temperatura Zoug Jar</b> (base de temperatura de Sensen): 30 incubadoras ZJ1 a ZJ30 en Salas 1, 2, 3 y Sala de Frío. Salmón del Atlántico (TIPO_ESPECIE = 1) con hitos por <b>porcentaje de desarrollo</b> (TIPO_TEST = 2). La madurez es el % que calcula el PLC.</li>
-        <li><b>Sensen · Incubación con Reuso</b> (base de agua dulce, Sala 4): 32 incubadoras ZJ 50 a ZJ 81 alimentadas por dos loops de recirculación. Trucha, con hitos por <b>UTA</b> (TIPO_TEST = 1). La madurez son las UTA acumuladas del PLC; el PLC también muestra un %, donde 100 % equivale a unas 480 UTA.</li>
+        <li><b>Sensen · Temperatura Zoug Jar</b> (base de temperatura de Sensen): 30 incubadoras ZJ1 a ZJ30 en Salas 1, 2, 3 y Sala de Frío. Especie: Salar (TIPO_ESPECIE = 1), con hitos por <b>porcentaje de desarrollo</b> (TIPO_TEST = 2). La madurez es el % que calcula el PLC.</li>
+        <li><b>Sensen · Incubación con Reuso</b> (base de agua dulce, Sala 4): 32 incubadoras ZJ 50 a ZJ 81 alimentadas por dos loops de recirculación. Especie: Trucha, con hitos por <b>UTA</b> (TIPO_TEST = 1). La madurez son las UTA acumuladas del PLC; el PLC también muestra un %, donde 100 % equivale a unas 480 UTA.</li>
       </ul>
       <h3>Cómo se calcula cada cosa</h3>
       <ul>
@@ -538,7 +540,7 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
       <ul>
         <li>¿DESHABILITAR_LOTE en 1 significa lote habilitado en Zoug Jar?</li>
         <li>En Reuso todas las incubadoras tienen banda de 0 a 10 °C, por lo que casi nunca habrá avisos. ¿Cuál es la banda real que quieren vigilar?</li>
-        <li>En Reuso, ZJ 66 y ZJ 67 tienen TIPO_ESPECIE = 1 y el resto 2. ¿Son todas trucha? Sus hitos (2, 4, 6 y 8 UTA) parecen valores de prueba: ¿cuáles son los hitos reales en UTA?</li>
+        <li>En Reuso, ZJ 66 y ZJ 67 tienen hitos de 2, 4, 6 y 8 UTA, que parecen valores de prueba: ¿cuáles son los hitos reales en UTA?</li>
         <li>¿Qué fórmula usa el PLC para el % de Zoug Jar y cuál es la fecha de eclosión planificada de cada lote?</li>
         <li>¿A quién y por qué canal hay que avisar cuando una incubadora sale de su banda, y después de cuánto tiempo?</li>
       </ul>
@@ -705,7 +707,7 @@ dash.calc('incubadoras', {
       lote_activo: Number(t.deshabilitar_lote) === 1,
       alarma_plc: Number(t.alarma_alta_plc) === 1 ? 'Alta' : Number(t.alarma_baja_plc) === 1 ? 'Baja' : '',
       madurez: Number(t.pct_desarrollo), pct_plc: Number(t.pct_desarrollo),
-      especie: Number(t.especie_codigo) === 1 ? 'Salmón del Atlántico' : 'Especie código ' + t.especie_codigo,
+      especie: 'Salar',
       hitos: [['Test 1', Number(t.test_1)], ['Test 2', Number(t.test_2)], ['Test 3', Number(t.test_3)], ['Test 4', Number(t.test_4)]].filter((h) => h[1] > 0)
     };
   }).sort((a, b) => a.numero - b.numero)
@@ -728,7 +730,7 @@ dash.calc('reuso_incubadoras', {
       alarma_plc: Number(t.alarma_alta_plc) === 1 ? 'Alta' : Number(t.alarma_baja_plc) === 1 ? 'Baja' : '',
       madurez: uta, pct_plc: pct,
       uta_100: pct > 0 ? Math.round(uta / pct * 100) : null,
-      especie: esp === 2 ? 'Trucha' : esp === 1 ? 'Trucha (código 1)' : esp === 0 ? 'Sin especie' : 'Especie código ' + esp,
+      especie: 'Trucha',
       hitos: [['Test 1', Number(t.test_1)], ['Test 2', Number(t.test_2)], ['Test 3', Number(t.test_3)], ['Test 4', Number(t.test_4)], ['Test 5', Number(t.test_5)]].filter((h) => h[1] > 0)
     };
   }).sort((a, b) => a.numero - b.numero)
