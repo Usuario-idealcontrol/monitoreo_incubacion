@@ -1,0 +1,965 @@
+{
+ "conector": "Idealcontrol MCP",
+ "herramienta": "aggregate",
+ "nota": "Las respuestas grandes superan el límite de contexto y se guardan en archivo: leerlas desde ese archivo. Si una respuesta llega en línea siendo grande, agregar al final del pipeline un $addFields _pad para forzar el archivo y luego descartar _pad.",
+ "datasets": {
+  "incubadoras_tags": {
+   "source": "cluster3/sensen_temperature_db/tag",
+   "pipeline": [
+    {
+     "$match": {
+      "shortName": {
+       "$in": [
+        "TEMP",
+        "PORCENTAJE_DESARROLLO",
+        "UTA_ACUMULADA",
+        "BANDA_MIN_TEMP",
+        "BANDA_MAX_TEMP",
+        "DESHABILITAR_LOTE",
+        "BIT_ALARMA_TEMP_ALTA",
+        "BIT_ALARMA_TEMP_BAJA",
+        "TEST_1_%",
+        "TEST_2_%",
+        "TEST_3_%",
+        "TEST_4_%",
+        "TIPO_ESPECIE",
+        "TIPO_TEST"
+       ]
+      }
+     }
+    },
+    {
+     "$group": {
+      "_id": "$locationId",
+      "kv": {
+       "$push": {
+        "k": "$shortName",
+        "v": "$lastValue"
+       }
+      },
+      "pct_tag": {
+       "$max": {
+        "$cond": [
+         {
+          "$eq": [
+           "$shortName",
+           "PORCENTAJE_DESARROLLO"
+          ]
+         },
+         {
+          "$toString": "$_id"
+         },
+         null
+        ]
+       }
+      },
+      "temp_tag": {
+       "$max": {
+        "$cond": [
+         {
+          "$eq": [
+           "$shortName",
+           "TEMP"
+          ]
+         },
+         {
+          "$toString": "$_id"
+         },
+         null
+        ]
+       }
+      }
+     }
+    },
+    {
+     "$match": {
+      "pct_tag": {
+       "$ne": null
+      }
+     }
+    },
+    {
+     "$replaceRoot": {
+      "newRoot": {
+       "$mergeObjects": [
+        {
+         "$arrayToObject": "$kv"
+        },
+        {
+         "location_id": {
+          "$toString": "$_id"
+         },
+         "pct_tag": "$pct_tag",
+         "temp_tag": "$temp_tag"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "$project": {
+      "alarma_alta_plc": "$BIT_ALARMA_TEMP_ALTA",
+      "alarma_baja_plc": "$BIT_ALARMA_TEMP_BAJA",
+      "banda_max_c": "$BANDA_MAX_TEMP",
+      "banda_min_c": "$BANDA_MIN_TEMP",
+      "deshabilitar_lote": "$DESHABILITAR_LOTE",
+      "especie_codigo": "$TIPO_ESPECIE",
+      "location_id": 1,
+      "pct_desarrollo": "$PORCENTAJE_DESARROLLO",
+      "pct_tag": 1,
+      "temp_c": "$TEMP",
+      "temp_tag": 1,
+      "test_1": "$TEST_1_%",
+      "test_2": "$TEST_2_%",
+      "test_3": "$TEST_3_%",
+      "test_4": "$TEST_4_%",
+      "tipo_test": "$TIPO_TEST",
+      "uta_acumulada": "$UTA_ACUMULADA"
+     }
+    },
+    {
+     "$sort": {
+      "location_id": 1
+     }
+    }
+   ],
+   "formato": "filas tal cual"
+  },
+  "ubicaciones": {
+   "source": "cluster3/sensen_temperature_db/location",
+   "pipeline": [
+    {
+     "$project": {
+      "_id": 0,
+      "incubadora": "$name",
+      "location_id": {
+       "$toString": "$_id"
+      },
+      "zone_id": {
+       "$toString": "$zoneId"
+      }
+     }
+    }
+   ],
+   "formato": "filas tal cual"
+  },
+  "salas": {
+   "source": "cluster3/sensen_temperature_db/zone",
+   "pipeline": [
+    {
+     "$project": {
+      "_id": 0,
+      "sala": "$name",
+      "zone_id": {
+       "$toString": "$_id"
+      }
+     }
+    }
+   ],
+   "formato": "filas tal cual"
+  },
+  "temperatura_horaria": {
+   "source": "cluster3/sensen_temperature_db/measurement_hour",
+   "pipeline": [
+    {
+     "$match": {
+      "$expr": {
+       "$gte": [
+        "$dateTime",
+        {
+         "$dateSubtract": {
+          "amount": 14,
+          "startDate": "$$NOW",
+          "unit": "day"
+         }
+        }
+       ]
+      },
+      "tagId": {
+       "$in": [
+        {
+         "$oid": "6751f5c451741e2cfa99d3b5"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d3d4"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d3f3"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d412"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d431"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d450"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d46f"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d48e"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d4ad"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d4cc"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d4eb"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d50a"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d529"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d548"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d567"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d586"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d5a5"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d5c4"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d5e3"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d602"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d621"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d640"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d65f"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d67e"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d69d"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6bc"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6db"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6fa"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d719"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d738"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "$sort": {
+      "dateTime": 1
+     }
+    },
+    {
+     "$group": {
+      "_id": {
+       "$toString": "$tagId"
+      },
+      "s": {
+       "$push": {
+        "$concatArrays": [
+         [
+          {
+           "$divide": [
+            {
+             "$toLong": "$dateTime"
+            },
+            3600000
+           ]
+          },
+          "$value"
+         ]
+        ]
+       }
+      }
+     }
+    },
+    {
+     "$project": {
+      "_id": 0,
+      "s": 1,
+      "temp_tag": "$_id"
+     }
+    }
+   ],
+   "formato": "cada doc {temp_tag, s:[[h,v]]} -> filas {temp_tag, hora: ISO UTC de h*3600000 ms con .000Z, temp_c: v}"
+  },
+  "desarrollo_diario": {
+   "source": "cluster3/sensen_temperature_db/measurement_hour",
+   "pipeline": [
+    {
+     "$match": {
+      "$expr": {
+       "$gte": [
+        "$dateTime",
+        {
+         "$dateSubtract": {
+          "amount": 180,
+          "startDate": "$$NOW",
+          "unit": "day"
+         }
+        }
+       ]
+      },
+      "tagId": {
+       "$in": [
+        {
+         "$oid": "6751f5c451741e2cfa99d3b8"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d3d7"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d3f6"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d415"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d434"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d453"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d472"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d491"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d4b0"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d4cf"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d4ee"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d50d"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d52c"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d54b"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d56a"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d589"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d5a8"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d5c7"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d5e6"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d605"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d624"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d643"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d662"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d681"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6a0"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6bf"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6de"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d6fd"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d71c"
+        },
+        {
+         "$oid": "6751f5c451741e2cfa99d73b"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "$sort": {
+      "dateTime": 1
+     }
+    },
+    {
+     "$group": {
+      "_id": {
+       "d": {
+        "$dateToString": {
+         "date": "$dateTime",
+         "format": "%Y-%m-%d",
+         "timezone": "America/Santiago"
+        }
+       },
+       "t": {
+        "$toString": "$tagId"
+       }
+      },
+      "v": {
+       "$last": "$value"
+      }
+     }
+    },
+    {
+     "$sort": {
+      "_id.d": 1
+     }
+    },
+    {
+     "$group": {
+      "_id": "$_id.t",
+      "s": {
+       "$push": {
+        "$concatArrays": [
+         [
+          "$_id.d",
+          "$v"
+         ]
+        ]
+       }
+      }
+     }
+    },
+    {
+     "$project": {
+      "_id": 0,
+      "pct_tag": "$_id",
+      "s": 1
+     }
+    }
+   ],
+   "formato": "cada doc {pct_tag, s:[[fecha,v]]} -> filas {pct_tag, fecha, pct_desarrollo: v}"
+  },
+  "reuso_tags": {
+   "source": "cluster1/freshwater/tag",
+   "pipeline": [
+    {
+     "$match": {
+      "zoneId": {
+       "$oid": "69eb961c4090f46e6bac5cbe"
+      }
+     }
+    },
+    {
+     "$project": {
+      "id": {
+       "$toString": "$_id"
+      },
+      "k": {
+       "$arrayElemAt": [
+        {
+         "$split": [
+          "$shortName",
+          "-ZJ"
+         ]
+        },
+        0
+       ]
+      },
+      "v": "$lastValue",
+      "zj": {
+       "$arrayElemAt": [
+        {
+         "$split": [
+          "$shortName",
+          "-"
+         ]
+        },
+        -1
+       ]
+      }
+     }
+    },
+    {
+     "$match": {
+      "k": {
+       "$in": [
+        "TEMP",
+        "UTA_ACUMULADA",
+        "PORCENTAJE_DESARROLLO",
+        "HABILITAR_ZJ",
+        "LOOP_ACTIVO",
+        "TIPO_TEST",
+        "TIPO_ESPECIE",
+        "BANDA_MIN_TEMP",
+        "BANDA_MAX_TEMP",
+        "BIT_ALARMA_ALTA_TEMP",
+        "BIT_ALARMA_BAJA_TEMP",
+        "TEST_1",
+        "TEST_2",
+        "TEST_3",
+        "TEST_4",
+        "TEST_5"
+       ]
+      }
+     }
+    },
+    {
+     "$group": {
+      "_id": "$zj",
+      "kv": {
+       "$push": {
+        "k": "$k",
+        "v": "$v"
+       }
+      },
+      "temp_tag": {
+       "$max": {
+        "$cond": [
+         {
+          "$eq": [
+           "$k",
+           "TEMP"
+          ]
+         },
+         "$id",
+         null
+        ]
+       }
+      },
+      "uta_tag": {
+       "$max": {
+        "$cond": [
+         {
+          "$eq": [
+           "$k",
+           "UTA_ACUMULADA"
+          ]
+         },
+         "$id",
+         null
+        ]
+       }
+      }
+     }
+    },
+    {
+     "$replaceRoot": {
+      "newRoot": {
+       "$mergeObjects": [
+        {
+         "$arrayToObject": "$kv"
+        },
+        {
+         "incubadora": "$_id",
+         "temp_tag": "$temp_tag",
+         "uta_tag": "$uta_tag"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "$project": {
+      "alarma_alta_plc": "$BIT_ALARMA_ALTA_TEMP",
+      "alarma_baja_plc": "$BIT_ALARMA_BAJA_TEMP",
+      "banda_max_c": "$BANDA_MAX_TEMP",
+      "banda_min_c": "$BANDA_MIN_TEMP",
+      "especie_codigo": "$TIPO_ESPECIE",
+      "habilitada": "$HABILITAR_ZJ",
+      "incubadora": 1,
+      "loop": "$LOOP_ACTIVO",
+      "pct_desarrollo": "$PORCENTAJE_DESARROLLO",
+      "temp_c": "$TEMP",
+      "temp_tag": 1,
+      "test_1": "$TEST_1",
+      "test_2": "$TEST_2",
+      "test_3": "$TEST_3",
+      "test_4": "$TEST_4",
+      "test_5": "$TEST_5",
+      "tipo_test": "$TIPO_TEST",
+      "uta_acumulada": "$UTA_ACUMULADA",
+      "uta_tag": 1
+     }
+    },
+    {
+     "$sort": {
+      "incubadora": 1
+     }
+    }
+   ],
+   "formato": "filas tal cual"
+  },
+  "reuso_temp_horaria": {
+   "source": "cluster1/freshwater/measurementHour",
+   "pipeline": [
+    {
+     "$match": {
+      "$expr": {
+       "$gte": [
+        "$dateTime",
+        {
+         "$dateSubtract": {
+          "amount": 14,
+          "startDate": "$$NOW",
+          "unit": "day"
+         }
+        }
+       ]
+      },
+      "tagId": {
+       "$in": [
+        {
+         "$oid": "69f12a150a3d777da475b805"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b828"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b84b"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b86e"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b891"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b8b4"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b8d7"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b8fa"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b91d"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b940"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b963"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b986"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b9a9"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b9cc"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b9ef"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba12"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba35"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba58"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba7b"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba9e"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bac1"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bae4"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb07"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb2a"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb4d"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb70"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb93"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bbb6"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bbd9"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bbfc"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bc1f"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bc42"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "$sort": {
+      "dateTime": 1
+     }
+    },
+    {
+     "$group": {
+      "_id": {
+       "$toString": "$tagId"
+      },
+      "s": {
+       "$push": {
+        "$concatArrays": [
+         [
+          {
+           "$divide": [
+            {
+             "$toLong": "$dateTime"
+            },
+            3600000
+           ]
+          },
+          "$value"
+         ]
+        ]
+       }
+      }
+     }
+    },
+    {
+     "$project": {
+      "_id": 0,
+      "s": 1,
+      "temp_tag": "$_id"
+     }
+    }
+   ],
+   "formato": "cada doc {temp_tag, s:[[h,v]]} -> filas {temp_tag, hora: ISO UTC de h*3600000 ms con .000Z, temp_c: v}"
+  },
+  "reuso_uta_diaria": {
+   "source": "cluster1/freshwater/measurementHour",
+   "pipeline": [
+    {
+     "$match": {
+      "$expr": {
+       "$gte": [
+        "$dateTime",
+        {
+         "$dateSubtract": {
+          "amount": 180,
+          "startDate": "$$NOW",
+          "unit": "day"
+         }
+        }
+       ]
+      },
+      "tagId": {
+       "$in": [
+        {
+         "$oid": "69f12a150a3d777da475b814"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b837"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b85a"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b87d"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b8a0"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b8c3"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b8e6"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b909"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b92c"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b94f"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b972"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b995"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b9b8"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b9db"
+        },
+        {
+         "$oid": "69f12a150a3d777da475b9fe"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba21"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba44"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba67"
+        },
+        {
+         "$oid": "69f12a150a3d777da475ba8a"
+        },
+        {
+         "$oid": "69f12a150a3d777da475baad"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bad0"
+        },
+        {
+         "$oid": "69f12a150a3d777da475baf3"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb16"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb39"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb5c"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bb7f"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bba2"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bbc5"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bbe8"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bc0b"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bc2e"
+        },
+        {
+         "$oid": "69f12a150a3d777da475bc51"
+        }
+       ]
+      },
+      "value": {
+       "$gt": 0
+      }
+     }
+    },
+    {
+     "$sort": {
+      "dateTime": 1
+     }
+    },
+    {
+     "$group": {
+      "_id": {
+       "d": {
+        "$dateToString": {
+         "date": "$dateTime",
+         "format": "%Y-%m-%d",
+         "timezone": "America/Santiago"
+        }
+       },
+       "t": {
+        "$toString": "$tagId"
+       }
+      },
+      "v": {
+       "$last": "$value"
+      }
+     }
+    },
+    {
+     "$sort": {
+      "_id.d": 1
+     }
+    },
+    {
+     "$group": {
+      "_id": "$_id.t",
+      "s": {
+       "$push": {
+        "$concatArrays": [
+         [
+          "$_id.d",
+          "$v"
+         ]
+        ]
+       }
+      }
+     }
+    },
+    {
+     "$project": {
+      "_id": 0,
+      "s": 1,
+      "uta_tag": "$_id"
+     }
+    }
+   ],
+   "formato": "cada doc {uta_tag, s:[[fecha,v]]} -> filas {uta_tag, fecha, uta: v}"
+  }
+ }
+}
