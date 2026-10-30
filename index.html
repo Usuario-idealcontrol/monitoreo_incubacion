@@ -434,6 +434,10 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
       <h2>Todas las incubadoras · <span data-draw="sys_name1" data-source="resumen">—</span></h2>
       <p class="ic-note">Temperatura horaria de 14 días con su banda, y madurez acumulada real (azul) contra lo esperado (ámbar) desde el inicio del lote. Pasa el dedo o el mouse por una gráfica para ver los valores; toca el encabezado de una incubadora para agrandar sus gráficas ahí mismo.</p>
       <div class="ic-segs">
+        <div class="ic-seg" role="group" aria-label="Sistema">
+          <button type="button" data-todas-sys="zj" class="is-on">Sensen · Zoug Jar</button>
+          <button type="button" data-todas-sys="reuso">Sensen · Reuso</button>
+        </div>
         <div class="ic-seg" role="group" aria-label="Qué gráficas mostrar">
           <button type="button" data-mode="ambas" class="is-on">Ambas</button>
           <button type="button" data-mode="pct">Madurez</button>
@@ -608,6 +612,7 @@ window.inc = {
     window.incSys = s; window.madSys = s; window.estShow = 5;
     document.querySelectorAll('.ic-sysbar .ic-seg button').forEach((b) => b.classList.toggle('is-on', b.dataset.sys === s));
     document.querySelectorAll('[data-pick-sys]').forEach((b) => b.classList.toggle('is-on', b.dataset.pickSys === s));
+    document.querySelectorAll('[data-todas-sys]').forEach((b) => b.classList.toggle('is-on', b.dataset.todasSys === s));
     ['sys_desc', 'sys_name1', 'inc_chips', 'temp_chart', 'uta_chart', 'estado_tbody', 'estado_more', 'sel_t', 'sel_u', 'mad_note', 'all_charts'].forEach((n) => dash.draw(n));
   },
   pending: (el, ids, chart) => {
@@ -1399,6 +1404,10 @@ document.querySelectorAll('#todas .ic-seg button').forEach((b) => {
     b.parentElement.querySelectorAll('button').forEach((o) => o.classList.toggle('is-on', o === b));
     dash.draw('all_charts');
   };
+});
+
+document.querySelectorAll('[data-todas-sys]').forEach((b) => {
+  b.onclick = () => { window.incOpen = null; inc.setSys(b.dataset.todasSys); };
 });
 
 dash.draw('all_charts', (el) => {
