@@ -313,9 +313,10 @@ html, body { margin: 0; background: #08111f; color: var(--color-fg); font-family
 .ic-calchart { position: relative; margin: 6px 0 14px; }
 .ic-calchart svg { display: block; overflow: visible; }
 .ic-calchart text { font-family: var(--font-anthropic-sans); font-size: 11px; fill: rgba(255,255,255,.75); }
-.ic-cal { display: grid; gap: var(--cds-gap-md); }
+.ic-cal { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--cds-gap-md); }
+.ic-week { min-width: 0; }
 .ic-week h3 { font-size: var(--cds-font-size-body); font-weight: 600; margin: 4px 0 6px; color: #fff; }
-.ic-week h3 small { font-weight: 400; color: rgba(255,255,255,.7); margin-left: 8px; }
+.ic-week h3 small { font-weight: 400; color: rgba(255,255,255,.7); margin-left: 8px; display: inline-block; }
 .ic-week table { width: 100%; }
 .ic-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
 .ic-pick { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 10px; }
